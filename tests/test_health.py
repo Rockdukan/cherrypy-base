@@ -2,15 +2,15 @@ import cherrypy
 from cherrypy import dispatch
 from cherrypy.test import helper
 
-from app.controllers.api.v1.users import UsersController
+from app.controllers.api.v1.health import HealthController
 
 
-class UsersControllerTests(helper.CPWebCase):
+class HealthControllerTests(helper.CPWebCase):
     @staticmethod
     def setup_server():
         cherrypy.tree.mount(
-            UsersController(),
-            "/api/v1/users",
+            HealthController(),
+            "/api/v1/health",
             {
                 "/": {
                     "request.dispatch": dispatch.MethodDispatcher(),
@@ -19,7 +19,7 @@ class UsersControllerTests(helper.CPWebCase):
             },
         )
 
-    def test_get_returns_items(self):
-        self.getPage("/api/v1/users")
+    def test_get_returns_ok_status(self):
+        self.getPage("/api/v1/health")
         self.assertStatus(200)
-        self.assertIn(b"items", self.body)
+        self.assertIn(b'"status": "ok"', self.body)

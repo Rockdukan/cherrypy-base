@@ -1,57 +1,59 @@
 # CherryPy Base — базовый шаблон для приложений на CherryPy
 CherryPy — это объектно-ориентированный веб-фреймворк для Python со встроенным HTTP-сервером.
 Он хорошо подходит для несложных сайтов и встраиваемых веб-интерфейсов.
-![screenshot](screenshot.jpg)
 
 ## 🔧 В шаблоне реализовано:
 - Базовая структура проекта
 - Конфигурация через `config/app.conf` и настройки из `.env`
-- Точка входа `server.py` и монтирование маршрутов `tree.mount`
-- HTML через Jinja2 и REST-ресурс `/api/v1/users` с `MethodDispatcher`
+- Точка входа `run.py` и монтирование маршрутов `tree.mount`
 - Плагин БД и инструмент авторизации как заготовки
 
 ## 📦 Структура проекта
 ```
-├── app/
-│   ├── controllers/
-│   ├── plugins/
-│   ├── tools/
-│   ├── templates/
-│   ├── models/
-│   └── services/
-├── config/
+├── app/                              # пакет приложения CherryPy
+│   ├── controllers/                  # классы-обработчики и монтирование tree.mount
+│   │   ├── api/                      # ветка REST API
+│   │   │   └── v1/                   # ресурсы API версии 1
+│   │   │       └── health.py
+│   │   └── root.py
+│   ├── models/                       # доменные модели (заготовка)
+│   ├── plugins/                      # плагины движка CherryPy (например, БД)
+│   ├── services/                     # бизнес-логика (заготовка)
+│   ├── templates/                    # шаблоны Jinja2
+│   └── tools/                        # инструменты CherryPy (хуки, авторизация)
+├── config/                           # настройки из переменных окружения и app.conf
 │   ├── app.conf
 │   └── settings.py
-├── tests/
-├── server.py
+├── tests/                            # pytest
 ├── env.example
+├── LICENSE
 ├── pyproject.toml
+├── README.md
 ├── requirements.txt
-├── requirements-dev.txt
-└── README.md
+├── run.py
+└── uv.lock
 ```
 
 ## ⚙️ Установка и запуск
+#### uv
 ```bash
 git clone https://gitverse.ru/Rockdukan/cherrypy-base.git
 cd cherrypy-base
 uv venv
 uv sync
-uv run python server.py
+uv run python run.py
 ```
 
-Если вы предпочитаете устанавливать зависимости из `requirements.txt`, можно сделать так:
+#### venv
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-pip install -e .
-python server.py
+python run.py
 ```
 
 ## 🧪 Тестирование
 ```bash
-uv sync --extra dev
 uv run pytest -q
 ```
 
@@ -60,12 +62,9 @@ uv run pytest -q
 - `GET /`  
   HTML-страница из шаблона `index.html`.
 
-- `GET /api/v1/users`  
-  Возвращает JSON:
+- `GET /api/v1/health`  
+  Проверка работоспособности. Возвращает JSON:
 
   ```json
-  {"items": []}
+  {"status": "ok"}
   ```
-
-- `POST /api/v1/users`  
-  Принимает JSON в теле запроса и возвращает JSON с перечнем принятых ключей.

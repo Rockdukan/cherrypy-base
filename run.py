@@ -3,7 +3,7 @@ from pathlib import Path
 import cherrypy
 from cherrypy import dispatch
 
-from app.controllers.api.v1.users import UsersController
+from app.controllers.api.v1.health import HealthController
 from app.controllers.root import Root
 from app.plugins.database import DatabasePlugin
 from config.settings import get_settings
@@ -28,12 +28,11 @@ def main() -> None:
     root = Root()
     cherrypy.tree.mount(root, "/", conf_path)
     cherrypy.tree.mount(
-        UsersController(),
-        "/api/v1/users",
+        HealthController(),
+        "/api/v1/health",
         {
             "/": {
                 "request.dispatch": dispatch.MethodDispatcher(),
-                "tools.json_in.on": True,
                 "tools.json_out.on": True,
             },
         },
